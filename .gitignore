@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+
+# Secrets
+.env
+.env.*
+
+# Data: the full raw dataset stays out of git. data/sample.parquet IS committed.
+data/raw/
+data/*.csv
+data/*.csv.gz
+data/*.json.gz
+data/*.jsonl.gz
+data/*.zip
+data/*.parquet
+!data/sample.parquet
+
+# Local scratch
+*.duckdb
+*.duckdb.wal
+.DS_Store
+# NOTE: traces/*.jsonl, evals/results/ and dist/ are deliverables and are committed.
+
+# Fake-provider eval artefacts (never reported as results)
+evals/results/need-classifier/fake_traces.jsonl
+evals/results/**/*_FAKE.json
