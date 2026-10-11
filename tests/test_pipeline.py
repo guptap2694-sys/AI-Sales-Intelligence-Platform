@@ -204,3 +204,11 @@ def test_profile_runs(capsys):
 def test_complete_record_fills_missing_keys():
     r = complete_record({"name": "X", "technologies": None})
     assert set(CANONICAL_FIELDS) <= set(r) and r["technologies"] == [] and r["extra"] == {}
+
+
+def test_clean_country_normalises_codes():
+    from pipeline.ingest import clean_country
+    assert clean_country("AU") == "Australia"
+    assert clean_country(" usa ") == "United States"
+    assert clean_country("Narnia") == "Narnia"
+    assert clean_country(None) is None

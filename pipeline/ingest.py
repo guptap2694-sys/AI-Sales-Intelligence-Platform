@@ -377,6 +377,25 @@ def _json_safe(v: Any) -> Any:
     return v
 
 
+# ISO codes and common variants -> one display name, so territory filters don't split.
+COUNTRY_ALIASES = {
+    "au": "Australia", "aus": "Australia", "australia": "Australia",
+    "nz": "New Zealand", "nzl": "New Zealand", "new zealand": "New Zealand",
+    "us": "United States", "usa": "United States", "united states": "United States",
+    "united states of america": "United States",
+    "uk": "United Kingdom", "gb": "United Kingdom", "gbr": "United Kingdom", "united kingdom": "United Kingdom",
+    "great britain": "United Kingdom", "england": "United Kingdom",
+    "sg": "Singapore", "sgp": "Singapore", "singapore": "Singapore",
+    "ca": "Canada", "can": "Canada", "canada": "Canada",
+    "in": "India", "ind": "India", "india": "India",
+}
+
+
+def clean_country(v: Any) -> str | None:
+    s = clean_str(v)
+    return COUNTRY_ALIASES.get(s.lower().strip(". "), s) if s else None
+
+
 def stable_id(rec: dict[str, Any]) -> str:
     basis = rec.get("domain") or "|".join(str(rec.get(k) or "") for k in ("name", "country", "state", "city"))
     return hashlib.sha1(basis.lower().encode()).hexdigest()[:16]
@@ -392,6 +411,7 @@ def normalise_row(raw: dict[str, Any], mapping: Mapping, as_of_year: int = CURRE
 
     for f in ("name", "description", "industry", "sub_industry", "country", "state", "city"):
         rec[f] = clean_str(get(f))
+    rec["country"] = clean_country(rec["country"])
     code = get("industry_code")
     rec["industry_code"] = clean_str(int(code) if isinstance(code, float) and code.is_integer() else code)
     pc = get("postcode")
